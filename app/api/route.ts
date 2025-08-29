@@ -21,54 +21,62 @@ export async function GET(req: NextRequest) {
     ],
   };
 
-  // Create PDF
-  const doc = new PDFDocument({ margin: 50 });
-  const chunks: Buffer[] = [];
+  // PDFKit -> Buffer
+  const buffer: Buffer = await new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 50 });
+    const chunks: Buffer[] = [];
 
-  doc.on("data", (chunk) => chunks.push(chunk));
-  doc.on("end", () => { });
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", (err) => reject(err));
 
-  // Header
-  doc.fontSize(20).text(invoiceData.company.name, 50, 50);
-  doc.fontSize(10).text(invoiceData.company.address, 50, 80);
+    // ---------- HEADER ----------
+    doc.fontSize(20).text(invoiceData.company.name, 50, 50);
+    doc.fontSize(10).text(invoiceData.company.address, 50, 80);
+    doc.text(invoiceData.company.phone, 50, 95);
 
-  // Customer info
-  doc
-    .fontSize(12)
-    .text(`Invoice #: ${invoiceData.invoiceNumber}`, 400, 50)
-    .text(`Date: ${invoiceData.date}`, 400, 65)
-    .text(`Due: ${invoiceData.dueDate}`, 400, 80);
+    // ---------- CUSTOMER INFO ----------
+    doc
+      .fontSize(12)
+      .text(`Invoice #: ${invoiceData.invoiceNumber}`, 400, 50)
+      .text(`Date: ${invoiceData.date}`, 400, 65)
+      .text(`Due: ${invoiceData.dueDate}`, 400, 80);
 
-  // Items
-  let position = 150;
-  doc.font("Helvetica-Bold").text("Description", 50, position);
-  doc.text("Qty", 300, position);
-  doc.text("Unit Price", 350, position);
-  doc.text("Total", 450, position);
-  doc.font("Helvetica");
+    doc
+      .moveDown()
+      .text(`Bill To:`, 50, 150)
+      .fontSize(12)
+      .text(invoiceData.customer.name, 50, 165)
+      .text(invoiceData.customer.address, 50, 180);
 
-  let total = 0;
-  invoiceData.items.forEach((item) => {
-    const itemTotal = item.quantity * item.unitPrice;
-    total += itemTotal;
-    position += 25;
-    doc.text(item.description, 50, position);
-    doc.text(item.quantity.toString(), 300, position);
-    doc.text(`$${item.unitPrice.toFixed(2)}`, 350, position);
-    doc.text(`$${itemTotal.toFixed(2)}`, 450, position);
+    // ---------- TABLE ----------
+    let position = 220;
+    doc.font("Helvetica-Bold").text("Description", 50, position);
+    doc.text("Qty", 300, position);
+    doc.text("Unit Price", 350, position);
+    doc.text("Total", 450, position);
+    doc.font("Helvetica");
+
+    let total = 0;
+    invoiceData.items.forEach((item) => {
+      const itemTotal = item.quantity * item.unitPrice;
+      total += itemTotal;
+      position += 25;
+      doc.text(item.description, 50, position);
+      doc.text(item.quantity.toString(), 300, position);
+      doc.text(`$${item.unitPrice.toFixed(2)}`, 350, position);
+      doc.text(`$${itemTotal.toFixed(2)}`, 450, position);
+    });
+
+    // ---------- TOTAL ----------
+    position += 40;
+    doc.font("Helvetica-Bold").text("Total:", 350, position);
+    doc.text(`$${total.toFixed(2)}`, 450, position);
+
+    doc.end();
   });
 
-  // Total
-  position += 40;
-  doc.font("Helvetica-Bold").text("Total:", 350, position);
-  doc.text(`$${total.toFixed(2)}`, 450, position);
-  doc.end();
-
-  const buffer = await new Promise<Buffer>((resolve) => {
-    const result = Buffer.concat(chunks);
-    resolve(result);
-  });
-
+  // Convert Node Buffer -> Uint8Array for Response
   return new Response(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
