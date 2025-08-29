@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import PDFDocument from "pdfkit";
 
-export async function GET(req: NextRequest) {
+export async function GET(req) {
   const invoiceData = {
     invoiceNumber: "INV-2025-001",
     date: "2025-08-29",
@@ -15,11 +15,11 @@ export async function GET(req: NextRequest) {
   };
 
   // ✅ Wrap PDFKit generation in a Promise that resolves when 'end' fires
-  const buffer: Buffer = await new Promise((resolve, reject) => {
+  const buffer = await new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 });
-    const chunks: Buffer[] = [];
+    const chunks = [];
 
-    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", (err) => reject(err));
 
