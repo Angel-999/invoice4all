@@ -7,14 +7,14 @@ import { InvoiceDocument } from "@/components/InvoiceDocument";
 import { fakeInvoice } from "./fakePayLoad";
 
 // Factoriza la lógica en una función utilitaria
-async function renderInvoicePdf(payload: any) {
+async function renderInvoicePdf(payload) {
   const stream = await renderToStream(
     <Document>
       <InvoiceDocument payload={payload} />
     </Document>
   );
 
-  const chunks: Uint8Array[] = [];
+  const chunks = [];
   for await (const chunk of stream) {
     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
   }
@@ -32,7 +32,7 @@ async function renderInvoicePdf(payload: any) {
   });
 }
 
-export async function POST(req: Request) {
+export async function POST(req) {
   let payload;
   try {
     payload = await req.json();
