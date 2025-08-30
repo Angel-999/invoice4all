@@ -6,7 +6,7 @@ import React from "react";
 import { InvoiceDocument } from "@/components/InvoiceDocument";
 import { fakeInvoice } from "./fakePayLoad";
 
-// Utility function to render PDF
+// Factoriza la lógica en una función utilitaria
 async function renderInvoicePdf(payload: any) {
   const stream = await renderToStream(
     <Document>
@@ -32,7 +32,6 @@ async function renderInvoicePdf(payload: any) {
   });
 }
 
-// Handle POST requests
 export async function POST(req: Request) {
   let payload;
   try {
@@ -43,16 +42,15 @@ export async function POST(req: Request) {
   return renderInvoicePdf(payload);
 }
 
-// Handle GET requests
+// GET simplemente usa el fake payload
 export async function GET() {
   return renderInvoicePdf(fakeInvoice);
 }
 
-// Handle preflight requests for CORS
 export async function OPTIONS() {
   return new NextResponse(null, {
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "*", // ✅ Allow all origins
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
