@@ -96,7 +96,7 @@ export const InvoiceDocument = ({ payload }: { payload: InvoicePayload }) => {
                     </Text>
                     <Text style={{ marginTop: 30 }}>Invoice Date: {new Date(payload.date).toLocaleDateString()}</Text>
                     <Text style={{ fontSize: 10 }}></Text>
-                    {payload.load_number ? <Text style={{ marginTop: 5 }}>Load: LDS15063713</Text> : null}
+                    {payload.load_number ? <Text style={{ marginTop: 5 }}>Load: {payload.load_number}</Text> : null}
                     
                     <Text style={{ fontSize: 10, fontWeight: "bold" }}></Text>
                 </View>
