@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { Document, renderToStream } from "@react-pdf/renderer";
 import React from "react";
 import { InvoiceDocument } from "@/components/InvoiceDocument";
-import { fakeInvoice } from "./fakePayload";
+import { fakeInvoice } from "./fakePayLoad";
 
 // Factoriza la lógica en una función utilitaria
 async function renderInvoicePdf(payload) {
