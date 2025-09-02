@@ -10,7 +10,7 @@ Font.register({
 });
 
 type Stop = { type: string; city: string; zip: string; datetime: string };
-type Item = { description: string; quantity: number; cost: number; stops: Stop[] };
+type Item = { description: string; notes: string; quantity: number; cost: number; stops: Stop[] };
 
 export type InvoicePayload = {
     id: string;
@@ -94,11 +94,18 @@ export const InvoiceDocument = ({ payload }: { payload: InvoicePayload }) => {
                     <Text style={{ fontSize: 12, fontWeight: "bold" }}>
                         ${payload.items.reduce((sum, item) => sum + item.cost * item.quantity, 0).toFixed(2)}
                     </Text>
-                    <Text style={{ marginTop: 30 }}>Invoice Date: {new Date(payload.date).toLocaleDateString()}</Text>
-                    <Text style={{ fontSize: 10 }}></Text>
-                    {payload.load_number ? <Text style={{ marginTop: 5 }}>Load: {payload.load_number}</Text> : null}
-                    
-                    <Text style={{ fontSize: 10, fontWeight: "bold" }}></Text>
+
+
+                    <View style={{ marginTop: 25, width: 200, alignSelf: "flex-end" }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 5 }}>
+                            <Text style={{ width: 100, textAlign: "right" }}>Invoice Date:</Text>
+                            <Text>{new Date(payload.date).toLocaleDateString()}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 5 }}>
+                            <Text style={{ width: 100, textAlign: "right" }}>Load:</Text>
+                            <Text>{payload.load_number}</Text>
+                        </View>
+                    </View>
                 </View>
             </View>
 
@@ -118,11 +125,18 @@ export const InvoiceDocument = ({ payload }: { payload: InvoicePayload }) => {
                         {/* Description + stops inside the same cell */}
                         <Text style={[styles.cell, { flex: 30 }]}>
                             <Text style={{ fontSize: 10 }}>{item.description}</Text>
+                            {item.notes && <Text>{item.notes}</Text>}
                             {item.stops.map((stop) => (
-                                <Text key={stop.city + stop.datetime} style={{ fontSize: 9, fontWeight: "normal", lineHeight: 1.2 }}>
-                                    {"\n"}{"\n"} {stop.type} - {new Date(stop.datetime).toLocaleDateString()}
+                                <Text
+                                    key={stop.city + stop.datetime}
+                                    style={{ fontSize: 9, fontWeight: "normal", lineHeight: 1.2 }}
+                                >
+                                    {"\n"}{"\n"}
+                                    {stop.type}
+                                    {stop.datetime ? ` - ${new Date(stop.datetime).toLocaleDateString()}` : ""}
                                     {"\n"}    {stop.city}{stop.zip ? `, ${stop.zip}` : ""}
                                 </Text>
+
                             ))}
                         </Text>
                         <Text style={{ flex: 3 }}>{item.quantity}</Text>

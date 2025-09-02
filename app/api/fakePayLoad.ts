@@ -1,6 +1,7 @@
 // app/api/pdf/fakePayload.ts
 export const fakeInvoice = {
   id: "782",
+  load_number: "AJK-908121",
   date: new Date().toISOString(),
   carrier: {
     name: "Three Stars Transport Inc",
