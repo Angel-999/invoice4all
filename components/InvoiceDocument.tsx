@@ -195,7 +195,7 @@ export const InvoiceDocument = ({ payload }: { payload: InvoicePayload }) => {
             <View style={{ marginTop: 25 }}>
                 <Text style={{ fontSize: 10, color: "#444444" }}>Notes</Text>
                 <Text style={{ fontSize: 8, color: "#444444" }}>
-                    All Check will be made payable to Company Name{"\n"}
+                    All Check will be made payable to {payload.carrier.name}{"\n"}
                     If you have questions about this bill, please use the following contact information:{"\n"}
                     {payload.carrier.phone} or {payload.carrier.email} {"\n"}
                     Thank you for your trust.
