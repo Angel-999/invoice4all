@@ -124,21 +124,36 @@ export const InvoiceDocument = ({ payload }: { payload: InvoicePayload }) => {
                         <Text style={{ flex: 2 }}>{idx + 1}</Text>
                         {/* Description + stops inside the same cell */}
                         <Text style={[styles.cell, { flex: 30 }]}>
-                            <Text style={{ fontSize: 10 }}>{item.description}</Text>
-                            {item.notes && <Text>{item.notes}</Text>}
+                            {/* Description always on its own line */}
+                            <Text style={{ fontSize: 10 }}>
+                                {item.description}
+                            </Text>
+
+                            {/* Force line break */}
+                            {"\n"}
+
+                            {/* Notes, if any */}
+                            {item.notes && (
+                                <>
+                                    <Text>{item.notes}</Text>
+
+                                </>
+                            )}
+
+                            {/* Stops */}
                             {item.stops.map((stop) => (
                                 <Text
                                     key={stop.city + stop.datetime}
                                     style={{ fontSize: 9, fontWeight: "normal", lineHeight: 1.2 }}
                                 >
-                                    {"\n"}{"\n"}
+                                    {"\n"}
                                     {stop.type}
                                     {stop.datetime ? ` - ${new Date(stop.datetime).toLocaleDateString()}` : ""}
                                     {"\n"}    {stop.city}{stop.zip ? `, ${stop.zip}` : ""}
                                 </Text>
-
                             ))}
                         </Text>
+
                         <Text style={{ flex: 3 }}>{item.quantity}</Text>
                         <Text style={styles.cell}>${item.cost.toFixed(2)}</Text>
                         <Text style={styles.cell}>${(item.cost * item.quantity).toFixed(2)}</Text>
